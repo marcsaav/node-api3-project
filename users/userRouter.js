@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const middlewares = require('../middlewares/middlewares')
+const middlewares = require('../middlewares/user-middlewares')
 
 const Users = require('./userDb')
 const Posts = require('../posts/postDb')
