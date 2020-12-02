@@ -30,7 +30,7 @@ const validateUser = (req, res, next) => {
         res
             .status(400)
             .json({ message: 'Missing user data.'})
-    } else if(!newUser.text) {
+    } else if(!newUser.name) {
         res
             .status(404)
             .json({ message: 'Missing required text field.'})
