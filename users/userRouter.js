@@ -2,46 +2,105 @@ const express = require('express');
 
 const router = express.Router();
 
-router.post('/', (req, res) => {
-  // do your magic!
+const middlewares = require('../middlewares/middlewares')
+
+const Users = require('./userDb')
+const Posts = require('../posts/postDb')
+
+router.post('/', middlewares.validateUser, async (req, res) => {
+  try {
+    const newUser = await Users.insert(req.body)
+    res
+      .status(201)
+      .json(newUser)
+  } catch(err) {
+    res
+      .status(500)
+      .json({ message: 'Could not add new user.'})
+  }
 });
 
-router.post('/:id/posts', (req, res) => {
-  // do your magic!
+router.post('/:id/posts', middlewares.validateUserId, middlewares.validatePost, async (req, res) => {
+  try {
+    const newPost = await Posts.insert(req.body)
+    res
+      .status(201)
+      .json(newPost)
+  } catch(err) {
+    res
+      .status(500)
+      .json({ message: 'Could not add new post.'})
+  }
 });
 
-router.get('/', (req, res) => {
-  // do your magic!
+router.get('/', async (req, res) => {
+  try {
+    const users = await Users.get()
+    res
+      .status(200)
+      .json(users)
+  } catch(err) {
+    res
+      .status(500)
+      .json({ message: 'Could not retrieve users data.'})
+  }
 });
 
-router.get('/:id', (req, res) => {
-  // do your magic!
+router.get('/:id', middlewares.validateUserId, async (req, res) => {
+  const { id } = req.params
+  try {
+    const user = await Users.getById(id)
+    res
+      .status(200)
+      .json(user)
+  } catch(err) {
+    res
+      .status(500)
+      .json({ message: 'Could not retrieve user data.'})
+  }
 });
 
-router.get('/:id/posts', (req, res) => {
-  // do your magic!
+router.get('/:id/posts', middlewares.validateUserId, async (req, res) => {
+  const { id } = req.params
+  try {
+    const userPosts = await Users.getUserPosts(id)
+    res
+      .status(200)
+      .json(userPosts)
+  } catch(err) {
+    res
+      .status(500)
+      .json({ message: 'Could not retrieve user posts data.'})
+  }
 });
 
-router.delete('/:id', (req, res) => {
-  // do your magic!
+router.delete('/:id', middlewares.validateUserId, async (req, res) => {
+  const { id } = req.params
+  try {
+    const deletedUser = await Users.remove(id)
+    res
+      .status(200)
+      .json(deletedUser)
+  } catch(err) {
+    res
+      .status(500)
+      .json({ message: 'Could not remove user.'})
+  }
 });
 
-router.put('/:id', (req, res) => {
-  // do your magic!
+router.put('/:id', middlewares.validateUserId, middlewares.validateUser,  async (req, res) => {
+  const { id } = req.params
+  const changes = req.body
+  try {
+    const newUser = await Users.update(id, changes)
+    res
+      .status(201)
+      .json(newUser)
+  } catch(err) {
+    res
+      .status(500)
+      .json({ message: 'Could not update user.'})
+  }
 });
-
-//custom middleware
-
-function validateUserId(req, res, next) {
-  // do your magic!
-}
-
-function validateUser(req, res, next) {
-  // do your magic!
-}
-
-function validatePost(req, res, next) {
-  // do your magic!
-}
 
 module.exports = router;
